@@ -2,21 +2,22 @@
 
 ## Overview
 
-This project is a FastAPI-based backend application that parses PDF documents into a hierarchical tree structure, supports document versioning, allows searching and node selection, generates AI-powered test cases using Groq Llama 3.3, and compares different versions of a document.
+This project is a **FastAPI-based backend application** that parses PDF documents into a hierarchical tree structure, supports document versioning, allows searching and node selection, generates AI-powered software test cases using **Groq Llama 3.3**, and compares different versions of a document.
 
 ---
 
 # Features
 
-- PDF document upload
+- Upload PDF documents
 - Automatic document versioning
-- Hierarchical tree parsing
+- Hierarchical tree reconstruction
 - OCR fallback for scanned PDFs
 - Table extraction
-- Search document headings and content
+- Search document headings and body content
 - Save and retrieve node selections
-- AI-generated test cases using Groq Llama 3.3
-- Compare different document versions
+- AI-generated software test cases
+- Compare document versions
+- REST APIs with Swagger documentation
 
 ---
 
@@ -53,18 +54,19 @@ tri9t-ai-assignment/
 ├── uploads/
 ├── requirements.txt
 ├── README.md
-├── .gitignore
-└── .env
+├── Approach_Document.md
+├── .env.example
+└── .gitignore
 ```
 
 ---
 
-# Installation
+# Setup Instructions
 
-## Clone the repository
+## 1. Clone Repository
 
 ```bash
-git clone https://github.com/<dhanush123445>/tri9t-ai-assignment.git
+git clone https://github.com/dhanush123445/tri9t-ai-assignment.git
 ```
 
 ```bash
@@ -73,7 +75,7 @@ cd tri9t-ai-assignment
 
 ---
 
-## Create Virtual Environment
+## 2. Create Virtual Environment
 
 Windows
 
@@ -89,7 +91,7 @@ Activate
 
 ---
 
-## Install Dependencies
+## 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -99,26 +101,29 @@ pip install -r requirements.txt
 
 # Environment Variables
 
-Create a `.env` file in the project root.
+Create a file named **.env** in the project root.
 
 Example:
 
 ```env
 DATABASE_URL=sqlite:///./tri9t.db
 
-GROQ_API_KEY=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
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
+> **Important:** Never commit your real API key to GitHub.
 
 ---
 
-# Run the Application
+# Running the Application
+
+Start the FastAPI server:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-The server starts at
+Server:
 
 ```
 http://127.0.0.1:8000
@@ -144,7 +149,7 @@ http://127.0.0.1:8000/redoc
 
 # API Endpoints
 
-## Upload Document
+## 1. Upload Document
 
 ```
 POST /documents/upload
@@ -154,40 +159,38 @@ Uploads a PDF document and creates a new document version.
 
 ---
 
-## Get Tree
+## 2. Get Document Tree
 
 ```
 GET /tree/{version_id}
 ```
 
-Returns the hierarchical tree of parsed document nodes.
+Returns the parsed hierarchical document tree.
 
 ---
 
-## Get Tree Node
+## 3. Get Tree Node
 
 ```
 GET /tree/node/{node_id}
 ```
 
-Returns information for a specific node.
+Returns details of a specific node.
 
 ---
 
-## Search
+## 4. Search Nodes
 
 ```
 GET /search
 ```
 
-Parameters
+Query Parameters
 
 ```
 q
 version_id
 ```
-
-Searches headings and body content.
 
 Example
 
@@ -195,39 +198,41 @@ Example
 GET /search?q=battery&version_id=5
 ```
 
+Searches headings and body text.
+
 ---
 
-## Create Selection
+## 5. Create Selection
 
 ```
 POST /selection
 ```
 
-Stores selected nodes.
-
 Example
 
 ```json
 {
-    "name":"Battery Tests",
-    "version_id":5,
-    "node_ids":[4,8]
+  "name": "Battery Tests",
+  "version_id": 5,
+  "node_ids": [4, 8]
 }
 ```
 
+Stores selected nodes.
+
 ---
 
-## Get Selection
+## 6. Get Selection
 
 ```
 GET /selection/{selection_id}
 ```
 
-Returns previously saved selection.
+Returns the stored selection.
 
 ---
 
-## Generate Test Cases
+## 7. Generate Test Cases
 
 ```
 POST /generate
@@ -239,11 +244,11 @@ Example
 POST /generate?document=Battery Life: Four AA batteries provide approximately 300 measurements.
 ```
 
-Returns structured JSON containing generated test cases.
+Returns AI-generated software test cases in JSON format.
 
 ---
 
-## Compare Versions
+## 8. Compare Versions
 
 ```
 POST /compare
@@ -253,12 +258,12 @@ Example
 
 ```json
 {
-    "old_version_id":5,
-    "new_version_id":6
+  "old_version_id": 5,
+  "new_version_id": 6
 }
 ```
 
-Returns
+Returns:
 
 - Added nodes
 - Removed nodes
@@ -267,43 +272,196 @@ Returns
 
 ---
 
-# Testing
+# How to Test
 
-Open Swagger
+Open Swagger UI
 
 ```
 http://127.0.0.1:8000/docs
 ```
 
-Test APIs in the following order
+Test the APIs in the following order:
 
-1. Upload Document
-2. Get Tree
-3. Search
-4. Create Selection
-5. Get Selection
-6. Generate Test Cases
-7. Compare Versions
+### Step 1
 
----
-
-# Version Re-ingestion Flow (v1 → v2)
-
-1. Upload a PDF document.
+Upload a PDF
 
 ```
 POST /documents/upload
 ```
 
-Version 1 is created.
+Expected Response:
 
-2. Modify the PDF document.
+```
+200 OK
+```
 
-3. Upload the modified PDF again.
+---
 
-A new version is created automatically.
+### Step 2
 
-4. Compare both versions.
+Retrieve the document tree
+
+```
+GET /tree/{version_id}
+```
+
+Expected Response:
+
+```
+200 OK
+```
+
+---
+
+### Step 3
+
+Retrieve a specific node
+
+```
+GET /tree/node/{node_id}
+```
+
+Expected Response:
+
+```
+200 OK
+```
+
+---
+
+### Step 4
+
+Search the document
+
+```
+GET /search
+```
+
+Expected Response:
+
+```
+200 OK
+```
+
+---
+
+### Step 5
+
+Create a selection
+
+```
+POST /selection
+```
+
+Expected Response:
+
+```
+200 OK
+```
+
+---
+
+### Step 6
+
+Retrieve the saved selection
+
+```
+GET /selection/{selection_id}
+```
+
+Expected Response:
+
+```
+200 OK
+```
+
+---
+
+### Step 7
+
+Generate test cases
+
+```
+POST /generate
+```
+
+Expected Response:
+
+```
+200 OK
+```
+
+Returns JSON test cases generated by Groq Llama 3.3.
+
+---
+
+### Step 8
+
+Compare document versions
+
+```
+POST /compare
+```
+
+Expected Response:
+
+```
+200 OK
+```
+
+Returns:
+
+- Added nodes
+- Removed nodes
+- Modified nodes
+- Unchanged nodes
+
+---
+
+# Version Re-ingestion Flow (v1 → v2)
+
+The application supports automatic document versioning.
+
+### Step 1
+
+Upload the original document.
+
+```
+POST /documents/upload
+```
+
+This creates **Version 1**.
+
+---
+
+### Step 2
+
+Modify the document.
+
+For example:
+
+- Add a new section
+- Remove a section
+- Edit existing content
+
+---
+
+### Step 3
+
+Upload the modified document.
+
+```
+POST /documents/upload
+```
+
+This automatically creates **Version 2**.
+
+---
+
+### Step 4
+
+Compare both versions.
 
 ```
 POST /compare
@@ -313,12 +471,12 @@ Example
 
 ```json
 {
-    "old_version_id":1,
-    "new_version_id":2
+  "old_version_id": 1,
+  "new_version_id": 2
 }
 ```
 
-The API identifies
+The comparison API identifies:
 
 - Added sections
 - Removed sections
@@ -329,11 +487,13 @@ The API identifies
 
 # Design Decisions
 
-- PyMuPDF is used for text extraction.
+- PyMuPDF is used for efficient text extraction.
+- pdfplumber is used for table extraction.
 - OCR is used as a fallback for scanned PDFs.
-- A stack-based hierarchy algorithm builds the document tree.
-- SHA-256 hashes are used to compare document nodes across versions.
-- Groq Llama 3.3 generates structured JSON test cases.
+- A stack-based algorithm reconstructs the document hierarchy.
+- SHA-256 hashes are generated for each node to support efficient version comparison.
+- Groq Llama 3.3 generates structured software test cases.
+- JSON validation ensures generated responses are correctly formatted.
 
 ---
 
@@ -341,20 +501,22 @@ The API identifies
 
 - OCR accuracy depends on scan quality.
 - Heading detection assumes numbered headings.
-- Tables spanning multiple pages may require additional processing.
-- Hash-based comparison cannot detect semantic changes with identical text.
+- Complex multi-page tables may require additional processing.
+- Hash-based comparison detects textual changes but not semantic similarity.
 
 ---
 
 # Future Improvements
 
-- PostgreSQL support
+- PostgreSQL database support
 - Docker deployment
-- Background task processing
+- Background document processing
 - Semantic search using embeddings
 - Vector database integration
-- Improved OCR pipeline
-- LLM retry strategy
+- Automatic LLM retry mechanism
+- Improved OCR preprocessing
+- Authentication and authorization
+- Export generated test cases to PDF/Excel
 
 ---
 
